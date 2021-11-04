@@ -7,28 +7,25 @@ import useHttp from "./hooks/use-http";
 function App() {
   const [tasks, setTasks] = useState([]);
 
-  const transformTasks = (tasksObj) => {
-    const loadedTasks = [];
-
-    for (const taskKey in tasksObj) {
-      loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
-    }
-
-    setTasks(loadedTasks);
-  };
-
   const URL =
     "https://react-tutorial-dd1ce-default-rtdb.europe-west1.firebasedatabase.app/tasks.json";
-  const config = { URL, method: 'GET'};
-  const {
-    isLoading,
-    error,
-    sendRequest: fetchTasks,
-  } = useHttp(config, transformTasks);
+
+  const config = { URL, method: "GET" };
+  const { isLoading, error, sendRequest: fetchTasks } = useHttp();
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    const transformTasks = (tasksObj) => {
+      const loadedTasks = [];
+
+      for (const taskKey in tasksObj) {
+        loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
+      }
+
+      setTasks(loadedTasks);
+    };
+
+    fetchTasks(config, transformTasks);
+  }, [fetchTasks]);
 
   const taskAddHandler = (task) => {
     setTasks((prevTasks) => prevTasks.concat(task));
